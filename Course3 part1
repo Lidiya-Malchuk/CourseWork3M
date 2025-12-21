@@ -1,0 +1,47 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import scipy
+!pip install EMD-signal
+
+
+Requirement already satisfied: EMD-signal in /opt/anaconda3/lib/python3.12/site-packages (1.9.0)
+Requirement already satisfied: numpy>=1.12 in /opt/anaconda3/lib/python3.12/site-packages (from EMD-signal) (1.26.4)
+Requirement already satisfied: scipy>=0.19 in /opt/anaconda3/lib/python3.12/site-packages (from EMD-signal) (1.13.1)
+Requirement already satisfied: pathos>=0.2.1 in /opt/anaconda3/lib/python3.12/site-packages (from EMD-signal) (0.3.4)
+Requirement already satisfied: tqdm<5.0,>=4.64.0 in /opt/anaconda3/lib/python3.12/site-packages (from EMD-signal) (4.66.4)
+Requirement already satisfied: ppft>=1.7.7 in /opt/anaconda3/lib/python3.12/site-packages (from pathos>=0.2.1->EMD-signal) (1.7.7)
+Requirement already satisfied: dill>=0.4.0 in /opt/anaconda3/lib/python3.12/site-packages (from pathos>=0.2.1->EMD-signal) (0.4.0)
+Requirement already satisfied: pox>=0.3.6 in /opt/anaconda3/lib/python3.12/site-packages (from pathos>=0.2.1->EMD-signal) (0.3.6)
+Requirement already satisfied: multiprocess>=0.70.18 in /opt/anaconda3/lib/python3.12/site-packages (from pathos>=0.2.1->EMD-signal) (0.70.18)
+
+#для графиков
+%matplotlib inline
+
+plt.rcParams['figure.figsize'] = (10, 4)
+plt.rcParams['font.size'] = 12
+
+
+import pandas as pd
+
+data = pd.read_csv('/Users/lidia/Desktop/Магистратура/Кобелев/Курсовая 3 сем/2025-03-20 18-17-32 266 rcms.csv')
+data.head()
+
+TIME_s	RHEO_1_mΩ	BASE_1_Ω	ECG_V	RHEO_2_mΩ	BASE_2_Ω	QS_1_Ω	QS_2_Ω
+0	0.000	-104.647	47.072	0.019	-3.897	30.988	1110.0	1110.0
+1	0.005	-109.738	47.063	0.021	-3.115	30.988	1091.0	1091.0
+2	0.010	-114.829	47.055	0.023	-2.332	30.988	1073.0	1073.0
+3	0.015	-119.921	47.046	0.026	-1.550	30.988	1054.0	1054.0
+4	0.020	-125.012	47.038	0.028	-0.767	30.989	1036.0	1036.0
+
+# 1-й столбец — время
+t = data.iloc[:, 0].values
+
+# 3-й столбец — базовый импеданс
+z0 = data.iloc[:, 2].values
+
+
+#проверка длины массивов
+print(len(t), len(z0))
+
+388325 388325
