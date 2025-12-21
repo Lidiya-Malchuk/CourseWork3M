@@ -5,3 +5,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import scipy
 !pip install EMD-signal
+
+#для графиков
+%matplotlib inline
+ 
+plt.rcParams['figure.figsize'] = (10, 4)
+plt.rcParams['font.size'] = 12
