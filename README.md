@@ -11,3 +11,8 @@ import scipy
  
 plt.rcParams['figure.figsize'] = (10, 4)
 plt.rcParams['font.size'] = 12
+
+import pandas as pd
+
+data = pd.read_csv('/Users/lidia/Desktop/Магистратура/Кобелев/Курсовая 3 сем/2025-03-20 18-17-32 266 rcms.csv')
+data.head()
