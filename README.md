@@ -97,3 +97,8 @@ fs = 1 / dt_mean
 
 print(f"Средний шаг по времени dt = {dt_mean:.6f} с")
 print(f"Частота дискретизации fs = {fs:.2f} Гц")
+
+from PyEMD import EMD, EEMD
+from scipy.signal import welch
+import matplotlib.pyplot as plt
+import numpy as np
