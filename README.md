@@ -180,4 +180,89 @@ plt.legend()
 plt.grid()
 plt.show()
 
+#график 2-х участков сигнала
+plt.figure(figsize=(15, 7))
+
+for i, (t_seg, z_seg) in enumerate(segments):
+    plt.plot(t_seg - t_seg[0], z_seg, label=f'промежуток {centers_sec[i]//120}-{centers_sec[i]//120 + 1} минут')
+
+plt.xlabel('Время внутри окна, с')
+plt.ylabel('Импеданс, Ом')
+plt.title('Выбранные 120-секундные фрагменты базового импеданса')
+plt.legend()
+plt.grid()
+plt.show()
+
+# берём окно 1-2 минут
+t_seg, z_seg = segments[0]
+
+# сделаем локальную временную ось (0-120.0 с)
+t_local = t_seg - t_seg[0]
+
+plt.figure(figsize=(10, 4))
+plt.plot(t_local, z_seg)
+plt.xlabel('Время, с')
+plt.ylabel('Импеданс, Ом')
+plt.title('Окно 2-й минуты (сигнал перед EEMD)')
+plt.grid()
+plt.show()
+
+from PyEMD import EEMD
+eemd = EEMD()
+
+# стандартное отклонение сигнала
+signal_std = np.std(z_seg)
+
+eemd.noise_width = 0.1 * signal_std
+eemd.trials = 50
+
+print(f"noise_width = {eemd.noise_width:.4f}")
+print(f"trials = {eemd.trials}")
+# запуск EEMD
+IMFs = eemd.eemd(z_seg, t_local)
+
+print(f"Количество IMF: {IMFs.shape[0]}")
+
+num_imfs = IMFs.shape[0]
+
+plt.figure(figsize=(12, 2 * num_imfs))
+
+for i in range(num_imfs):
+    plt.subplot(num_imfs, 1, i + 1)
+    plt.plot(t_local, IMFs[i])
+    plt.ylabel(f'IMF {i+1}')
+    plt.grid()
+    
+plt.xlabel('Время, с')
+plt.suptitle('IMF после EEMD (окно 2-й минуты)', y=0.92)
+plt.show()
+
+
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+
+num_imfs = IMFs.shape[0]
+cols = 3  # количество колонок
+rows = [5, 5, 3]  # количество графиков в каждой колонке
+
+plt.figure(figsize=(15, 10))
+gs = GridSpec(max(rows), cols, hspace=0.4, wspace=0.3)
+
+imf_idx = 0
+for col in range(cols):
+    for row in range(rows[col]):
+        if imf_idx >= num_imfs:
+            break
+        ax = plt.subplot(gs[row, col])
+        ax.plot(t_local, IMFs[imf_idx])
+        ax.set_ylabel(f'IMF {imf_idx+1}')
+        ax.grid(True)
+        if row == max(rows)-1:  # подпись только у нижнего графика
+            ax.set_xlabel('Время, с')
+        imf_idx += 1
+
+plt.suptitle('IMF после EEMD (окно 1-2 минут)', y=0.95)
+plt.show()
+
+
 
