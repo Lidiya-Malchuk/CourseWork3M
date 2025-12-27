@@ -44,6 +44,54 @@ dt = np.diff(t)
 # Средний шаг по времени
 dt_mean = np.mean(dt)
 
+from scipy.signal import detrend
+
+z0_proc = detrend(z0)
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 5))
+
+plt.plot(t, z0_proc, linewidth=1.5)
+plt.xlabel('Время, с')
+plt.ylabel('Импеданс, Ом')
+plt.title('Сигнал базового импеданса после удаления тренда')
+plt.grid()
+
+plt.show()
+
+#проектирование фильтра
+from scipy.signal import butter, filtfilt
+
+fc = 0.5  # Гц — выше дыхания
+wn = fc / (fs / 2)
+
+b, a = butter(N=4, Wn=wn, btype='low')
+
+#применение фильтра
+z0_filt = filtfilt(b, a, z0_proc)
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 5))
+plt.plot(t, z0, label='Исходный Z₀', alpha=0.6)
+plt.plot(t, z0_filt, label='После предобработки', linewidth=2)
+plt.xlabel('Время, с')
+plt.ylabel('Импеданс, Ом')
+plt.title('Предобработка базового импеданса')
+plt.legend()
+plt.grid()
+plt.show()
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 5))
+plt.plot(t, z0_filt, linewidth=1.5)
+plt.xlabel('Время, с')
+plt.ylabel('Импеданс, Ом')
+plt.title('Предобработка базового импеданса')
+plt.grid()
+plt.show()
+
 # Частота дискретизации
 fs = 1 / dt_mean
 
