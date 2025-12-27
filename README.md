@@ -102,3 +102,71 @@ from PyEMD import EMD, EEMD
 from scipy.signal import welch
 import matplotlib.pyplot as plt
 import numpy as np
+# длительность окна (сек)
+window_length = 60  
+
+# интересующие моменты времени (сек)
+centers_sec = [120, 960, 2100]  # 2, 16, 35 мин
+
+segments = []  # список для хранения фрагментов
+
+for center in centers_sec:
+    # логическая маска по времени
+    mask = (t >= center) & (t < center + window_length)
+    
+    t_seg = t[mask]
+    z_seg = z0_filt[mask]
+    
+    segments.append((t_seg, z_seg))
+    
+    print(f"Фрагмент {center//60}-я минута: "
+          f"{t_seg[0]:.1f}–{t_seg[-1]:.1f} c, "
+          f"{len(z_seg)} отсчётов")
+
+print(f"Начало записи: t_min = {t.min():.2f} c")
+print(f"Конец записи:  t_max = {t.max():.2f} c")
+print(f"Длительность записи: {(t.max() - t.min())/60:.2f} мин")
+
+# длительность окна (сек)
+window_length = 60  
+
+# интересующие моменты времени (сек)
+centers_sec = [120, 960, 1920]  # 2, 16, 32 мин
+
+segments = []  # список для хранения фрагментов
+
+for center in centers_sec:
+    # логическая маска по времени
+    mask = (t >= center) & (t < center + window_length)
+    
+    t_seg = t[mask]
+    z_seg = z0_filt[mask]
+    
+    segments.append((t_seg, z_seg))
+    
+    print(f"Фрагмент {center//60}-я минута: "
+          f"{t_seg[0]:.1f}–{t_seg[-1]:.1f} c, "
+          f"{len(z_seg)} отсчётов")
+
+          # длительность окна (сек)
+window_length = 60  
+
+# интересующие моменты времени (сек)
+centers_sec = [120, 960, 1860]  # 2, 16, 31 мин
+
+segments = []  # список для хранения фрагментов
+
+for center in centers_sec:
+    # логическая маска по времени
+    mask = (t >= center) & (t < center + window_length)
+    
+    t_seg = t[mask]
+    z_seg = z0_filt[mask]
+    
+    segments.append((t_seg, z_seg))
+    
+    print(f"Фрагмент {center//60}-я минута: "
+          f"{t_seg[0]:.1f}–{t_seg[-1]:.1f} c, "
+          f"{len(z_seg)} отсчётов")
+
+
