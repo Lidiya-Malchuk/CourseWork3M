@@ -168,5 +168,16 @@ for center in centers_sec:
     print(f"Фрагмент {center//60}-я минута: "
           f"{t_seg[0]:.1f}–{t_seg[-1]:.1f} c, "
           f"{len(z_seg)} отсчётов")
+          plt.figure(figsize=(12, 5))
+
+for i, (t_seg, z_seg) in enumerate(segments):
+    plt.plot(t_seg - t_seg[0], z_seg, label=f'{centers_sec[i]//60}-я минута')
+
+plt.xlabel('Время внутри окна, с')
+plt.ylabel('Импеданс, Ом')
+plt.title('Выбранные 60-секундные фрагменты базового импеданса')
+plt.legend()
+plt.grid()
+plt.show()
 
 
