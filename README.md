@@ -285,3 +285,44 @@ plt.title(f'Спектр IMF {imf_idx+1}')
 plt.grid()
 plt.show()
 
+# FFT всех IMF
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+from scipy.fft import rfft, rfftfreq
+
+num_imfs = IMFs.shape[0]
+
+# конфигурация колонок
+cols = 3
+rows = [3, 5, 5]   # количество IMF в каждой колонке
+max_rows = max(rows)
+
+plt.figure(figsize=(16, 10))
+gs = GridSpec(max_rows, cols, hspace=0.4, wspace=0.35)
+
+imf_idx = 0
+
+for col in range(cols):
+    for row in range(rows[col]):
+        if imf_idx >= num_imfs:
+            break
+
+        # FFT для текущей IMF
+        imf = IMFs[imf_idx]
+        fft_vals = np.abs(rfft(imf))
+        freqs = rfftfreq(len(imf), d=1/fs)
+
+        ax = plt.subplot(gs[row, col])
+        ax.plot(freqs, fft_vals)
+        ax.set_xlim(0, 2)  # диапазон интересующих частот
+        ax.set_ylabel(f'IMF {imf_idx+1}')
+        ax.grid(True)
+
+        # подпись оси X только у нижнего графика колонки
+        if row == rows[col] - 1:
+            ax.set_xlabel('Частота, Гц')
+
+        imf_idx += 1
+
+plt.suptitle('Спектры IMF после EEMD (окно 120 с)', y=0.96)
+plt.show()
