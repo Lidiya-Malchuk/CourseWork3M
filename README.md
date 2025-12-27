@@ -264,5 +264,24 @@ for col in range(cols):
 plt.suptitle('IMF после EEMD (окно 1-2 минут)', y=0.95)
 plt.show()
 
+#FFT одной IMF
+from scipy.fft import rfft, rfftfreq
 
+# номер IMF для примера
+imf_idx = 0
+
+imf = IMFs[imf_idx]
+
+# FFT
+fft_vals = np.abs(rfft(imf))
+freqs = rfftfreq(len(imf), d=1/fs)
+
+plt.figure(figsize=(10, 4))
+plt.plot(freqs, fft_vals)
+plt.xlim(0, 2)  # интересуют низкие частоты
+plt.xlabel('Частота, Гц')
+plt.ylabel('Амплитуда')
+plt.title(f'Спектр IMF {imf_idx+1}')
+plt.grid()
+plt.show()
 
