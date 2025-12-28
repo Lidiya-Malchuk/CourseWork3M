@@ -357,3 +357,12 @@ best_idx, best_freq, best_amp = best_imf
 print(f"Дыхательная IMF: IMF {best_idx+1}")
 print(f"Доминирующая частота: {best_freq:.3f} Гц")
 print(f"Частота дыхания: {best_freq * 60:.1f} дых/мин")
+
+plt.figure(figsize=(10, 4))
+plt.plot(t_local, IMFs[best_idx])
+plt.xlabel('Время, с')
+plt.ylabel('Импеданс, Ом')
+plt.title(f'Дыхательная компонента (IMF {best_idx+1})')
+plt.grid()
+plt.show()
+
