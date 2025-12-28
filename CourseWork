@@ -324,3 +324,36 @@ for col in range(cols):
 
 plt.suptitle('Спектры IMF после EEMD (окно 120 с)', y=0.96)
 plt.show()
+
+resp_band = (0.1, 0.5)  # диапазон дыхания
+
+imf_peaks = []
+
+for i in range(num_imfs):
+    imf = IMFs[i]
+    
+    fft_vals = np.abs(rfft(imf))
+    freqs = rfftfreq(len(imf), d=1/fs)
+    
+    # маска диапазона дыхания
+    mask = (freqs >= resp_band[0]) & (freqs <= resp_band[1])
+    
+    if not np.any(mask):
+        imf_peaks.append((i, None, 0))
+        continue
+    
+    peak_amp = np.max(fft_vals[mask])
+    peak_freq = freqs[mask][np.argmax(fft_vals[mask])]
+    
+    imf_peaks.append((i, peak_freq, peak_amp))
+# оставляем только IMF с найденной частотой
+valid_peaks = [p for p in imf_peaks if p[1] is not None]
+
+# выбираем IMF с максимальной амплитудой в дыхательном диапазоне
+best_imf = max(valid_peaks, key=lambda x: x[2])
+
+best_idx, best_freq, best_amp = best_imf
+
+print(f"Дыхательная IMF: IMF {best_idx+1}")
+print(f"Доминирующая частота: {best_freq:.3f} Гц")
+print(f"Частота дыхания: {best_freq * 60:.1f} дых/мин")
