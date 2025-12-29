@@ -443,3 +443,43 @@ for col, (t_local, IMFs) in enumerate(all_IMFs):
 plt.suptitle('Спектры IMF после EEMD по 3 сегментам (120 с)', y=0.95)
 plt.show()
 
+resp_band = (0.1, 0.5)  # диапазон дыхания, Гц
+
+plt.figure(figsize=(18, 5))
+
+for col, (t_local, IMFs) in enumerate(all_IMFs):
+    color = colors[col]
+    num_imfs = IMFs.shape[0]
+    imf_peaks = []
+
+    # поиск пиков в диапазоне дыхания для каждой IMF
+    for i in range(num_imfs):
+        imf = IMFs[i]
+        fft_vals = np.abs(rfft(imf))
+        freqs = rfftfreq(len(imf), d=1/fs)
+        mask = (freqs >= resp_band[0]) & (freqs <= resp_band[1])
+        if np.any(mask):
+            peak_amp = np.max(fft_vals[mask])
+            peak_freq = freqs[mask][np.argmax(fft_vals[mask])]
+            imf_peaks.append((i, peak_freq, peak_amp))
+
+    # выбираем IMF с максимальной амплитудой в дыхательном диапазоне
+    if imf_peaks:
+        best_imf = max(imf_peaks, key=lambda x: x[2])
+        best_idx, best_freq, best_amp = best_imf
+        print(f'Сегмент {col+1}: Дыхательная IMF {best_idx+1}, '
+              f'Частота {best_freq:.3f} Гц ≈ {best_freq*60:.1f} дых/мин')
+
+        # строим график дыхательной IMF
+        plt.plot(t_local, IMFs[best_idx], color=color, label=f'Сегмент {col+1}')
+    else:
+        print(f'Сегмент {col+1}: дыхательная IMF не найдена')
+
+plt.xlabel('Время, с')
+plt.ylabel('Импеданс, Ом')
+plt.title('Дыхательная IMF по 3 сегментам (120 с)')
+plt.legend()
+plt.grid()
+plt.show()
+
+
