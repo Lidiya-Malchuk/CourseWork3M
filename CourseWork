@@ -366,3 +366,80 @@ plt.title(f'Дыхательная компонента (IMF {best_idx+1})')
 plt.grid()
 plt.show()
 
+# запуск EEMD
+IMFs = eemd.eemd(z_seg, t_local)
+
+print(f"Количество IMF: {IMFs.shape[0]}")
+
+from PyEMD import EEMD
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+
+eemd = EEMD()
+eemd.noise_width = 0.1
+eemd.trials = 50
+
+cols = 3  # 3 сегмента
+colors = ['blue', 'orange', 'green']  # цвета для сегментов
+
+all_IMFs = []
+
+# запуск EEMD по каждому сегменту
+for t_seg, z_seg in segments:
+    t_local = t_seg - t_seg[0]
+    IMFs = eemd.eemd(z_seg, t_local)
+    all_IMFs.append((t_local, IMFs))
+
+# определяем максимальное количество IMF для GridSpec
+max_imfs = max(IMFs.shape[0] for _, IMFs in all_IMFs)
+plt.figure(figsize=(18, 10))
+gs = GridSpec(max_imfs, cols, hspace=0.4, wspace=0.35)
+
+for col, (t_local, IMFs) in enumerate(all_IMFs):
+    color = colors[col]
+    for row in range(IMFs.shape[0]):
+        ax = plt.subplot(gs[row, col])
+        ax.plot(t_local, IMFs[row], color=color)
+        ax.set_ylabel(f'IMF {row+1}')
+        ax.grid(True)
+        
+        # подпись оси X только на нижнем графике каждого сегмента
+        if row == IMFs.shape[0]-1:
+            ax.set_xlabel('Время, с')
+        else:
+            ax.set_xticklabels([])  # убираем подписи по X для остальных графиков
+
+plt.suptitle('IMF после EEMD по 3 сегментам (120 с)', y=0.95)
+plt.show()
+
+from scipy.fft import rfft, rfftfreq
+
+resp_band = (0.1, 0.5)  # диапазон дыхания, Гц
+
+plt.figure(figsize=(18, 10))
+max_imfs = max(IMFs.shape[0] for _, IMFs in all_IMFs)
+gs = GridSpec(max_imfs, cols, hspace=0.4, wspace=0.35)
+
+for col, (t_local, IMFs) in enumerate(all_IMFs):
+    color = colors[col]
+    for row in range(IMFs.shape[0]):
+        imf = IMFs[row]
+        fft_vals = np.abs(rfft(imf))
+        freqs = rfftfreq(len(imf), d=1/fs)
+
+        ax = plt.subplot(gs[row, col])
+        ax.plot(freqs, fft_vals, color=color)
+        ax.set_xlim(0, 2)  # ограничиваем диапазон до 2 Гц
+        ax.set_ylabel(f'IMF {row+1}')
+        ax.grid(True)
+
+        # подпись оси X только на нижнем графике каждого сегмента
+        if row == IMFs.shape[0]-1:
+            ax.set_xlabel('Частота, Гц')
+        else:
+            ax.set_xticklabels([])  # убираем подписи по X для остальных графиков
+
+plt.suptitle('Спектры IMF после EEMD по 3 сегментам (120 с)', y=0.95)
+plt.show()
+
